@@ -1,1 +1,48 @@
+*/So again, Let's dive into SQL query, so we have two tables: first one is the information about suppliers,
+the second one is their location. So i need to combine these two tables and make and query 
+that will ouput combinde table. Then create new table with name "SORTED": /*
 
+SELECT DISTINCT
+r.name_company,
+r.passport_id,
+r.quantity,
+r1.Status
+INTO SORTED
+FROM
+rams r
+JOIN
+rams1 r1 ON r1.Track_ID = r.City_id;
+
+/*Also, I did not like the phone_number formats;
+like: 77711234567, It is not comfortable to read.
+*/
+UPDATE rams
+SET phone_number = '7 (' + SUBSTRING(CAST(phone_number AS VARCHAR), 2, 3) + ') ' +
+SUBSTRING(CAST(phone_number AS VARCHAR), 5, 3) + ' ' +
+SUBSTRING(CAST(phone_number AS VARCHAR), 8, 2) + ' ' +
+SUBSTRING(CAST(phone_number AS VARCHAR), 10, 2);
+
+UPDATE RAMS
+SET date = LEFT(date, 10);
+
+/*IT WILL SELECT IN DATE column only first ten characters;*/
+
+update rams
+SET date = REPLACE(date, '.', '/');
+
+select
+DateName (year, date) + '-' + DateName(month, date) + '-' + DATENAME(DAY, date) AS date_sup,
+COUNT(DISTINCT id) AS total_orders
+INTO day_order
+FROM rams
+GROUP BY
+DateName(YEAR, date) + '-' + DateName(MONTH, date) + '-' + DateName(DAY, date);
+
+select *from rams
+
+select date, sum(quantity) as qnt, (select sum(quantity) from rams) as total, CAST(sum(quantity) * 100 /
+(select sum(quantity) from rams) as decimal(10,2)) as PRCNT
+
+from rams
+group by date
+order by prcnt asc;
