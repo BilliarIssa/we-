@@ -1,0 +1,39 @@
+create procedure Analysis1
+    @quantitygiven INT
+as
+begin
+    begin transaction;
+
+    CREATE TABLE #CompanyStats (
+        company_name NVARCHAR(255),
+        total_quantity INT,
+        average_quantity DECIMAL(10,2),
+		Status NVARCHAR(255)
+    );
+    
+    INSERT INTO #CompanyStats (company_name, total_quantity, average_quantity, Status)
+    SELECT 
+        r.name_company, 
+        SUM(r.quantity) AS total_quantity,
+        AVG(CAST(r.quantity AS DECIMAL(10,2))) AS average_quantity,
+		r1.Status
+    FROM 
+        rams r
+	JOIN rams1 r1 on r1.Track_ID = r.City_Id
+    GROUP BY 
+        r.name_company, r1.Status;
+    
+    SELECT 
+        company_name, 
+        total_quantity, 
+        average_quantity,
+		Status
+    FROM 
+        #CompanyStats
+    WHERE 
+        average_quantity > @quantitygiven;
+    
+    COMMIT TRANSACTION;
+    
+    DROP TABLE #CompanyStats;
+END;
